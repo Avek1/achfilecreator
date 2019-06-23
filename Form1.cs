@@ -35,30 +35,36 @@ namespace WinFormApp
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                // pulls file content into main text box
                 textBoxFilePath.Text = openFileDialog1.FileName;
                 textBoxFileContent.Text = File.ReadAllText(openFileDialog1.FileName);
 
-
+                // save content of imported string for global use
                 Global.TheString = File.ReadAllText(openFileDialog1.FileName);
 
-                var reasonCode = File.ReadAllText(openFileDialog1.FileName);
-                textBoxReasonCode.Text = reasonCode.Substring(5, 3);
+                // selects range of text to pull into corresponding text boxes
+                var dateTime = File.ReadAllText(openFileDialog1.FileName); ;
+                textBoxDateTime.Text = dateTime.Substring(11, 12);
 
-                var date = File.ReadAllText(openFileDialog1.FileName); ;
-                textBoxDate.Text = date.Substring(12, 12);
+                var dollarAmount = File.ReadAllText(openFileDialog1.FileName);
+                textBoxDollarAmount.Text = dollarAmount.Substring(29, 10);
 
-                var creditAccount = File.ReadAllText(openFileDialog1.FileName);
-                textBoxCreditAccount.Text = creditAccount.Substring(28, 16);
-
-                var bank = File.ReadAllText(openFileDialog1.FileName);
-                textBoxBank.Text = bank.Substring(48, 20);
+                var individualId = File.ReadAllText(openFileDialog1.FileName);
+                textBoxIndividualId.Text = individualId.Substring(45, 15);
 
                 var customerName = File.ReadAllText(openFileDialog1.FileName);
-                textBoxCustomerName.Text = customerName.Substring(72, 26);
+                textBoxCustomerName.Text = customerName.Substring(64, 21);
 
-                var tracer = File.ReadAllText(openFileDialog1.FileName);
-                textBoxTracer.Text = tracer.Substring(102, 7);
+                var returnReasonCode = File.ReadAllText(openFileDialog1.FileName);
+                textBoxReturnReasonCode.Text = returnReasonCode.Substring(92, 3);
 
+                var trace = File.ReadAllText(openFileDialog1.FileName);
+                textBoxTrace.Text = trace.Substring(105, 14);
+
+
+                // pulls file content into preview text box.
+                textBoxPreviewContent.Text = openFileDialog1.FileName;
+                textBoxPreviewContent.Text = File.ReadAllText(openFileDialog1.FileName);
             }
 
         }
@@ -66,19 +72,19 @@ namespace WinFormApp
         private void button1_Click(object sender, EventArgs e)
         {
             // pull text from form and assign to variables.
-            var newReasonCode = textBoxReasonCode.Text;
+            var newDateTime = textBoxDateTime.Text;
 
-            var newDate = textBoxDate.Text;
+            var newDollarAmount = textBoxDollarAmount.Text;
+            var newDollarAmountPadded = newDollarAmount.PadLeft(10);
 
-            var newCreditAccount = textBoxCreditAccount.Text;
-
-            var newBank = textBoxBank.Text;
-            var newPaddedBank = newBank.PadLeft(20);
+            var newIndividualId = textBoxIndividualId.Text;
 
             var newCustomerName = textBoxCustomerName.Text;
-            var newPaddedCustomerName = newCustomerName.PadLeft(26);
+            var newCustomerNamePadded = newCustomerName.PadLeft(21);
 
-            var newTracer = textBoxTracer.Text;
+            var newReturnReasonCode = textBoxReturnReasonCode.Text;
+
+            var newTrace = textBoxTrace.Text;
 
 
             // pull in original string
@@ -86,28 +92,33 @@ namespace WinFormApp
             var aStringBuilder = new StringBuilder(theString);
 
             // replace original string values with new values.
-            // new reason code
-            aStringBuilder.Remove(5, 3);
-            aStringBuilder.Insert(5, newReasonCode);
-            // new date
-            aStringBuilder.Remove(12, 12);
-            aStringBuilder.Insert(12, newDate);
-            // new credit account
-            aStringBuilder.Remove(28, 16);
-            aStringBuilder.Insert(28, newCreditAccount);
-            // new bank
-            aStringBuilder.Remove(48, 20);
-            aStringBuilder.Insert(48, newPaddedBank);
+
+            // new datetime
+            aStringBuilder.Remove(11, 12);
+            aStringBuilder.Insert(11, newDateTime);
+
+            // new dollar amount
+            aStringBuilder.Remove(29, 10);
+            aStringBuilder.Insert(29, newDollarAmountPadded);
+
+            // new individual id
+            aStringBuilder.Remove(45, 15);
+            aStringBuilder.Insert(45, newIndividualId);
+
             // new customer name
-            aStringBuilder.Remove(72, 26);
-            aStringBuilder.Insert(72, newPaddedCustomerName);
-            // new tracer
-            aStringBuilder.Remove(102, 7);
-            aStringBuilder.Insert(102, newTracer);
+            aStringBuilder.Remove(64, 21);
+            aStringBuilder.Insert(64, newCustomerNamePadded);
+
+            // new return reason code
+            aStringBuilder.Remove(92, 3);
+            aStringBuilder.Insert(92, newReturnReasonCode);
+
+            // new trace
+            aStringBuilder.Remove(105, 14);
+            aStringBuilder.Insert(105, newTrace);
 
             theString = aStringBuilder.ToString();
 
-            //var dateTime = DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss");
             var dateTime = DateTime.Now.ToString("yyyyddMHHmmss");
 
             var extension = ".ach";
@@ -117,7 +128,47 @@ namespace WinFormApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-                
+
         }
+
+        private void textBoxDateTime_TextChanged(object sender, EventArgs e)
+        {
+            if (textBoxPreviewContent.Text != "")
+            {
+                string previewText = textBoxPreviewContent.Text;
+                StringBuilder sb = new StringBuilder(previewText);
+
+                var dateTime = textBoxReturnReasonCode.Text;
+                var dateTimePadded = dateTime.PadRight(3);
+
+                sb.Remove(11, 12);
+                sb.Insert(11, dateTimePadded);
+
+                previewText = sb.ToString();
+                textBoxPreviewContent.Text = previewText.ToString();
+
+            }
+        }
+        private void textBoxReasonCode_TextChanged(object sender, EventArgs e)
+        {
+
+            if (textBoxPreviewContent.Text != "")
+            {
+                string previewText = textBoxPreviewContent.Text;
+                StringBuilder sb = new StringBuilder(previewText);
+
+                var reasonCode = textBoxReturnReasonCode.Text;
+                var reasonCodePadded = reasonCode.PadRight(3);
+
+                sb.Remove(92, 3);
+                sb.Insert(92, reasonCodePadded);
+
+                previewText = sb.ToString();
+                textBoxPreviewContent.Text = previewText.ToString();
+
+            }
+        }
+
+      
     }
 }
